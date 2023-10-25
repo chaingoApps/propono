@@ -5,13 +5,15 @@ module Propono
   end
 
   class Publisher
-    def self.publish(*args)
-      new(*args).publish
+    def self.publish(aws_client, propono_config, topic_name, message, options = {})
+      new(aws_client, propono_config, topic_name, message, options).publish
     end
 
     attr_reader :aws_client, :propono_config, :topic_name, :message, :id, :async
 
-    def initialize(aws_client, propono_config, topic_name, message, async: false, id: nil)
+    def initialize(aws_client, propono_config, topic_name, message, options = {})
+      async = options.fetch(:async, false)
+      id = options.fetch(:id, nil)
       raise PublisherError.new("Topic is nil") if topic_name.nil?
       raise PublisherError.new("Message is nil") if message.nil?
 
